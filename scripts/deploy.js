@@ -2,9 +2,10 @@ const { ethers } = require("hardhat");
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  TokenContract = await ethers.getContractFactory("Token"); // instance contract
+  TokenContract = await ethers.getContractFactory("Token"); // instance contract , could pass abi after compile , binary, signer
   token = await TokenContract.deploy(); // deploy contract
-  console.log(token.address);
+  await token.deployTransaction.wait(1);
+  console.log(token.address); // contract address
 }
 
 main()
