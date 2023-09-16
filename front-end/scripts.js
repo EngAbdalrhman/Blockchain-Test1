@@ -2,6 +2,7 @@
 
 import { ethers } from "./ethers-5.6.esm.min.js";
 import { abi, contractAddress } from "./constant.js";
+// import "./loadenv.js";
 
 const connectButton = document.querySelector(".btn_connect");
 const transferTokensButton = document.querySelector(".btn_transfer");
@@ -76,18 +77,17 @@ async function transferTokens() {
 async function Request() {
   console.log(`funding...`);
   if (typeof window.ethereum !== "undefined") {
-    const provider = new ethers.providers.Web3Provider(window.ethereum); // rpc
+    const provider = new ethers.providers.Web3Provider(window.ethereum); // get rpc
     const w_owner = new ethers.Wallet(
-      "5b5c78d24d7412f8262ac2a4e4ae2fdf3dc881f2ca547f51fa9e3a1d20cb9dc0",
+      process.env.wallet_private_sign_key, // replace with private key of owner
       provider
-    );
+    ); // get owner sign
     console.log("owner" + w_owner);
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
     // console.log(provider.getSigner());
     // console.log("my address :" + (await signer.getAddress()));
     // const i_owner = "0xe2e45dadf43d0a83bf945688afba99f1eb03750a";
-    // const owner_sign = [object Object];
     const contract = new ethers.Contract(contractAddress, abi, signer);
     // console.log("contract : " + contract);
     const amount = parseInt(document.querySelector(".Amount").value);
@@ -96,7 +96,7 @@ async function Request() {
       // const i_owner = await contract.i_owner(); // need signer not address
       //console.log("owner : " + i_owner);
       const transfer = await contract
-        .connect(w_owner)
+        .connect(w_owner) // connect as owner and call function
         .transfer(await signer.getAddress(), amount);
       console.log("transfer = " + transfer);
       getBalance();
